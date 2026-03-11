@@ -1,9 +1,4 @@
-from matplotlib.hatch import Shapes
 from pettingzoo.classic import hanabi_v5
-import math
-import random
-import matplotlib
-import matplotlib.pyplot as plt
 from collections import namedtuple, deque
 from itertools import count
 
