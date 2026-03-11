@@ -5,7 +5,6 @@ https://pettingzoo.farama.org/environments/classic/hanabi/
 
 from pettingzoo.classic import hanabi_v5
 
-
 def main():
 
     env = hanabi_v5.env(
