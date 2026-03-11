@@ -6,6 +6,8 @@ Uses libraries: Pytorch, PettingZoo libraries.
 
 Using Huggingface, Pytorch Documentation, as reference.
 
+### Using Python 3.12.13
+
 ## Current Idea:
 - Using a double DQN for target values (Target q values) and determining our next steps (Current q values, actual model).
 - Replay memory to keep track of moves that occurred before; Need to figure out how we select our mask of moves to optimize with; 
