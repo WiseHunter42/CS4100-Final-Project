@@ -1,22 +1,11 @@
-from pettingzoo.classic import hanabi_v5
-from collections import namedtuple, deque
-from itertools import count
-
-import torch
 import torch.nn as nn
-import torch.optim as optim
 
-SHAPE = [658, 30, 30, 20] # Initial 658, Ending 20 are fixed
+num_observations = 657
+num_actions = 20
+SHAPE = [num_observations, 30, 30, num_actions] # Initial 658, Ending 20 are fixed
 ACTIVATION = nn.functional.relu
 
-env = hanabi_v5.env(
-    render_mode="human"
-    # additional parameters here if we want to change them
-    # e.g. num_players=4, colors=5, ranks=5, hand_size=4, etc.
-)
-env.reset(seed=42)
-
-class network(nn.Model):
+class network(nn.Module):
     def __init__(self):
         super(network, self).__init__()
         self.layers = []
@@ -25,5 +14,6 @@ class network(nn.Model):
 
     def forward(self, x):
         ### x = input value array
-        for layer in self.layers:
+        for layer in self.layers[:-1]:
             x = ACTIVATION(layer(x))
+        return self.layers[-1](x)
