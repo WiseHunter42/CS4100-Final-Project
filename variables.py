@@ -4,7 +4,7 @@ import torch
 
 CAPACITY = 10000
 
-epoch = 1 
+epoch = 0
 batch_size = 128
 gamma = 0.99
 eps_start = 0.9
