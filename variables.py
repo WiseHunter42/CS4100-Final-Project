@@ -1,6 +1,7 @@
 from collections import namedtuple, deque
 import agent
-from torch import optim
+import torch
+
 CAPACITY = 10000
 
 epoch = 1 
@@ -12,11 +13,13 @@ eps_decay = 2500
 tau = 0.005
 lr = 3e-4
 
-device = 0 # TODO: Determine what device
+device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+# need to know whatk kind of device is being used to determine episode count and to put tensors on the correct device
+device_type = ("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 memory = deque([], maxlen=CAPACITY)
 policy_net = agent.network().to(device=device) 
 target_net = agent.network().to(device=device) 
-optimizer = optim.AdamW(params=policy_net.parameters, lr=lr, amsgrad=True)
+optimizer = torch.optim.AdamW(params=policy_net.parameters(), lr=lr, amsgrad=True)
 
 target_net.load_state_dict(policy_net.state_dict()) # load the default random weights/biases from policy into target, so they're equal at the start
 
