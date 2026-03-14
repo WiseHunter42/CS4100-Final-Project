@@ -33,7 +33,8 @@ def learn():
 
             # If the agent is done, the game is over; break out of the loop early.
             if terminated or truncated:
-                break
+                env.step(None)  # pass None for the action to move to the next agent rather than breaking
+                continue
 
             # need to get the state from the observation, 
             # which is a dictionary with keys "observation", "action_mask" which holds the legal moves
