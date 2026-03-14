@@ -31,6 +31,10 @@ def learn():
             # env.last() returns info for current agent
             observation, reward, terminated, truncated, _ = env.last()
 
+            # If the agent is done, the game is over; break out of the loop early.
+            if terminated or truncated:
+                break
+
             # need to get the state from the observation, 
             # which is a dictionary with keys "observation", "action_mask" which holds the legal moves
             state = torch.tensor(observation["observation"], dtype=torch.float32, device=variables.device).unsqueeze(0)
