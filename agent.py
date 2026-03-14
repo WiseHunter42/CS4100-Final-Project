@@ -8,7 +8,7 @@ ACTIVATION = nn.functional.relu
 class network(nn.Module):
     def __init__(self):
         super(network, self).__init__()
-        self.layers = []
+        self.layers = nn.ModuleList()
         for a in range(len(SHAPE) - 1):
             self.layers.append(nn.Linear(SHAPE[a], SHAPE[a + 1]))
 
