@@ -5,6 +5,8 @@ import torch
 CAPACITY = 10000
 
 epoch = 0
+loss_history = []
+episode_rewards = []
 batch_size = 128
 gamma = 0.99
 eps_start = 0.9

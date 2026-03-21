@@ -40,10 +40,11 @@ def optimize():
     # Optimize the model
     variables.optimizer.zero_grad()
     loss.backward()
-    
+
     # In-place gradient clipping
     torch.nn.utils.clip_grad_value_(variables.policy_net.parameters(), 10) # change clipping as needed
     variables.optimizer.step()
+    variables.loss_history.append(loss.item())
 
 
 
