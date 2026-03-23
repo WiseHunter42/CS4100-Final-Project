@@ -16,3 +16,9 @@ def resume(policy_file="policy.pth", target_file="target.pth"):
     variables.target_net.load_state_dict(torch.load(target_file, weights_only=True))
     variables.policy_net.load_state_dict(torch.load(policy_file, weights_only=True))
 
+
+# function to save loss_history and episode_rewards
+def save_history(loss_file="loss_history.pth", rewards_file="episode_rewards.pth"):
+    torch.save(variables.loss_history, loss_file)
+    torch.save(variables.episode_rewards, rewards_file)
+
