@@ -31,13 +31,14 @@ def plot_rewards():
     plt.savefig(f"graphs/rewards_{time.strftime('%Y%m%d_%H%M%S')}.png")
     plt.show()
 
-def learn(training_limit='episodes'):
+def learn():
     env = hanabi_v5.env(
         # render_mode="human"
         # additional parameters here if we want to change them
         # e.g. num_players=4, colors=5, ranks=5, hand_size=4, etc.
     )
-
+    training_limit = str(input("Enter training limit type ('time' or 'episodes'): ")).lower()
+    
     if training_limit == 'time':
         # ask user for a time limit for training, and run the learning loop for that amount of time
         time_limit = float(input("Enter the time limit for training (in minutes): "))
