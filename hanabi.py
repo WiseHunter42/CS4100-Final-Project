@@ -31,33 +31,46 @@ def plot_rewards():
     plt.savefig(f"graphs/rewards_{time.strftime('%Y%m%d_%H%M%S')}.png")
     plt.show()
 
-def learn():
+def learn(training_limit='episodes'):
     env = hanabi_v5.env(
         # render_mode="human"
         # additional parameters here if we want to change them
         # e.g. num_players=4, colors=5, ranks=5, hand_size=4, etc.
     )
 
-    if variables.device.type in ["cuda", "mps"]:
-        num_episodes = 6000000
+    if training_limit == 'time':
+        # ask user for a time limit for training, and run the learning loop for that amount of time
+        time_limit = float(input("Enter the time limit for training (in minutes): "))
+        start_time = time.time()
+    elif training_limit == 'episodes':
+        # ask user for an episode limit for training, and run the learning loop for that amount of episodes
+        episode_limit = int(input("Enter the episode limit for training: "))
+        start_time = time.time()
     else:
-        num_episodes = 500000
-    for i in range(num_episodes):
+        print("Invalid training limit. Please enter 'time' or 'episodes'.")
+        return
+
+    while True:
+        if training_limit == 'time':
+            elapsed_time = time.time() - start_time
+            if elapsed_time >= time_limit * 60:
+                print(f"Time limit of {time_limit} minutes reached. Ending training.")
+                break
+        elif training_limit == 'episodes':
+            if len(variables.episode_rewards) >= episode_limit:
+                print(f"Episode limit of {episode_limit} reached. Ending training.")
+                break  
+        
         # reset the environment at the start of each episode
         # I think the seeds needs to be random or every episode will be the same?
         # Someone could check this
         env.reset()
         episode_reward = 0
         
-        # report time passed and estimated time remaining every 100 episodes
-        if i % 100 == 0 and i > 0:
-            print(f"Episode {i} / {num_episodes}")
+        # report elapsed time every 100 episodes
+        if len(variables.episode_rewards) % 100 == 0:
             elapsed_time = time.time() - start_time
-            estimated_total_time = elapsed_time / i * num_episodes
-            estimated_time_remaining = estimated_total_time - elapsed_time
-            print(f"Time elapsed: {elapsed_time:.2f} seconds, Estimated time remaining: {estimated_time_remaining:.2f} seconds")
-        if i == 0:
-            start_time = time.time()
+            print(f"Episode: {len(variables.episode_rewards)}, Elapsed Time: {elapsed_time:.2f} seconds")
 
         for agent in env.agent_iter():
             # env.last() returns info for current agent
