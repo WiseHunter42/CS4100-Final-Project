@@ -2,7 +2,7 @@ from collections import namedtuple, deque
 import agent
 import torch
 
-CAPACITY = 10000
+CAPACITY = 50000
 
 epoch = 0
 loss_history = []
@@ -11,7 +11,7 @@ batch_size = 128
 gamma = 0.99
 eps_start = 0.9
 eps_end = 0.01
-eps_decay = 2500
+eps_decay = 10000
 tau = 0.005
 lr = 3e-4
 

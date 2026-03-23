@@ -9,6 +9,7 @@ from optimize import optimize
 import torch
 import variables
 import matplotlib.pyplot as plt
+import time
 
 def plot_loss():
     plt.figure()
@@ -17,7 +18,7 @@ def plot_loss():
     plt.ylabel("Loss")
     plt.title("Training Loss")
     plt.tight_layout()
-    plt.savefig("loss.png")
+    plt.savefig(f"graphs/loss_{time.strftime('%Y%m%d_%H%M%S')}.png")
     plt.show()
 
 def plot_rewards():
@@ -27,7 +28,7 @@ def plot_rewards():
     plt.ylabel("Total Reward")
     plt.title("Episode Rewards")
     plt.tight_layout()
-    plt.savefig("rewards.png")
+    plt.savefig(f"graphs/rewards_{time.strftime('%Y%m%d_%H%M%S')}.png")
     plt.show()
 
 def learn():
@@ -38,15 +39,25 @@ def learn():
     )
 
     if variables.device.type in ["cuda", "mps"]:
-        num_episodes = 60000
+        num_episodes = 6000000
     else:
-        num_episodes = 5000
+        num_episodes = 500000
     for i in range(num_episodes):
         # reset the environment at the start of each episode
         # I think the seeds needs to be random or every episode will be the same?
         # Someone could check this
         env.reset()
         episode_reward = 0
+        
+        # report time passed and estimated time remaining every 100 episodes
+        if i % 100 == 0 and i > 0:
+            print(f"Episode {i} / {num_episodes}")
+            elapsed_time = time.time() - start_time
+            estimated_total_time = elapsed_time / i * num_episodes
+            estimated_time_remaining = estimated_total_time - elapsed_time
+            print(f"Time elapsed: {elapsed_time:.2f} seconds, Estimated time remaining: {estimated_time_remaining:.2f} seconds")
+        if i == 0:
+            start_time = time.time()
 
         for agent in env.agent_iter():
             # env.last() returns info for current agent
@@ -82,7 +93,6 @@ def learn():
 
             # perform one step of the optimization on the policy network
             optimize()
-            variables.epoch += 1
 
             # Soft update of the target network's weights
             # θ′ ← τ θ + (1 −τ )θ′
