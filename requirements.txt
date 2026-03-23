@@ -54,6 +54,7 @@ SimpleWebSocketServer==0.1.2
 six==1.17.0
 sympy==1.14.0
 termcolor==3.3.0
+time
 torch==2.10.0
 twine==6.2.0
 typing==3.7.4.3
