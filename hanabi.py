@@ -11,9 +11,9 @@ import variables
 import matplotlib.pyplot as plt
 import time
 
-def plot_loss():
+def plot_loss(loss_history):
     plt.figure()
-    plt.plot(variables.loss_history)
+    plt.plot(loss_history)
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.title("Training Loss")
@@ -21,9 +21,9 @@ def plot_loss():
     plt.savefig(f"graphs/loss_{time.strftime('%Y%m%d_%H%M%S')}.png")
     plt.show()
 
-def plot_rewards():
+def plot_rewards(episode_rewards):
     plt.figure()
-    plt.plot(variables.episode_rewards)
+    plt.plot(episode_rewards)
     plt.xlabel("Episode")
     plt.ylabel("Total Reward")
     plt.title("Episode Rewards")
@@ -120,5 +120,5 @@ def learn():
 
 if __name__ == "__main__":
     learn()
-    plot_loss()
-    plot_rewards()
+    plot_loss(variables.loss_history())
+    plot_rewards(variables.episode_rewards)
