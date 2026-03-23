@@ -19,7 +19,7 @@ def plot_loss(loss_history):
     plt.ylabel("Loss")
     plt.title("Training Loss")
     plt.tight_layout()
-    plt.savefig(f"graphs/loss_{time.strftime('%Y%m%d_%H%M%S')}.png")
+    plt.savefig(f"Data/graphs/loss_{time.strftime('%Y%m%d_%H%M%S')}.png")
     plt.show()
 
 def plot_rewards(episode_rewards):
@@ -29,7 +29,7 @@ def plot_rewards(episode_rewards):
     plt.ylabel("Total Reward")
     plt.title("Episode Rewards")
     plt.tight_layout()
-    plt.savefig(f"graphs/rewards_{time.strftime('%Y%m%d_%H%M%S')}.png")
+    plt.savefig(f"Data/graphs/rewards_{time.strftime('%Y%m%d_%H%M%S')}.png")
     plt.show()
 
 def learn():
@@ -121,6 +121,7 @@ def learn():
 
 if __name__ == "__main__":
     learn()
-    plot_loss(variables.loss_history())
+    plot_loss(variables.loss_history)
     plot_rewards(variables.episode_rewards)
-    save_load.save(f'policy_data/policy_{time.strftime("%Y%m%d_%H%M%S")}.pth', f'target_data/target_{time.strftime("%Y%m%d_%H%M%S")}.pth')
+    save_load.save(f'Data/policy_nets/policy_{time.strftime("%Y%m%d_%H%M%S")}.pth', f'Data/target_nets/target_{time.strftime("%Y%m%d_%H%M%S")}.pth')
+    save_load.save_history(f'Data/histories/loss_history_{time.strftime("%Y%m%d_%H%M%S")}.pth', f'Data/histories/episode_rewards_{time.strftime("%Y%m%d_%H%M%S")}.pth')
