@@ -10,6 +10,7 @@ import torch
 import variables
 import matplotlib.pyplot as plt
 import time
+import save_load
 
 def plot_loss(loss_history):
     plt.figure()
@@ -122,3 +123,4 @@ if __name__ == "__main__":
     learn()
     plot_loss(variables.loss_history())
     plot_rewards(variables.episode_rewards)
+    save_load.save(f'policy_data/policy_{time.strftime("%Y%m%d_%H%M%S")}.pth', f'target_data/target_{time.strftime("%Y%m%d_%H%M%S")}.pth')
