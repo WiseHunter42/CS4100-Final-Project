@@ -47,3 +47,10 @@ Note: Using Python 3.12.12
   - 8-hints
 - Optimization and Training ~3/31
 - Slides 4/8
+
+
+# Fine-tuning
+
+Static: 500,000 Episode, roughly 3 million epoch runs (8 hours)
+
+1. Decay rate; increasing to 1000000 decay rate (2.5 million epochs before hitting 0). 
