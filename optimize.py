@@ -7,6 +7,9 @@ def optimize():
     if len(variables.memory) < variables.batch_size:
         return
     
+    # update the epoch counter
+    variables.epoch += 1
+    
     # get random sample of batches from memory
     transitions = random.sample(variables.memory, variables.batch_size)
 
