@@ -8,7 +8,7 @@ Using Huggingface, Pytorch Documentation, as reference.
 
 ### How to setup:
 
-Note: Using Python 3.12.12
+Note: Using Python 3.12.13
 
 1. Make sure anaconda is install; we use conda for the virtual environment
 2. Clone the repository locally
