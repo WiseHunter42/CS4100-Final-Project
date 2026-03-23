@@ -53,4 +53,5 @@ Note: Using Python 3.12.12
 
 Static: 500,000 Episode, roughly 3 million epoch runs (8 hours)
 
-1. Decay rate; increasing to 1000000 decay rate (2.5 million epochs before hitting 0). 
+1. Decay rate; increasing to 1000000 decay rate (2.5 million epochs before hitting 0). Increased memory capacity to 100,000. 
+2. If above doesn't work, decrease tau by a power of 10
