@@ -41,14 +41,14 @@ def learn(training_limit='episodes'):
     if training_limit == 'time':
         # ask user for a time limit for training, and run the learning loop for that amount of time
         time_limit = float(input("Enter the time limit for training (in minutes): "))
-        start_time = time.time()
     elif training_limit == 'episodes':
         # ask user for an episode limit for training, and run the learning loop for that amount of episodes
         episode_limit = int(input("Enter the episode limit for training: "))
-        start_time = time.time()
     else:
         print("Invalid training limit. Please enter 'time' or 'episodes'.")
         return
+
+    start_time = time.time()
 
     while True:
         if training_limit == 'time':
