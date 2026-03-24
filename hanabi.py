@@ -111,11 +111,12 @@ def learn():
 
             # Soft update of the target network's weights
             # θ′ ← τ θ + (1 −τ )θ′
-            target_net_state_dict = variables.target_net.state_dict()
-            policy_net_state_dict = variables.policy_net.state_dict()
-            for key in policy_net_state_dict:
-                target_net_state_dict[key] = policy_net_state_dict[key]*variables.tau + target_net_state_dict[key]*(1-variables.tau)
-            variables.target_net.load_state_dict(target_net_state_dict)
+            if variables.epoch % variables.update_frequency == 0:
+                target_net_state_dict = variables.target_net.state_dict()
+                policy_net_state_dict = variables.policy_net.state_dict()
+                for key in policy_net_state_dict:
+                    target_net_state_dict[key] = policy_net_state_dict[key]*variables.tau + target_net_state_dict[key]*(1-variables.tau)
+                variables.target_net.load_state_dict(target_net_state_dict)
         variables.episode_rewards.append(episode_reward)
     env.close()
 
