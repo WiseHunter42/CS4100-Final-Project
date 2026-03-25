@@ -3,6 +3,18 @@ from pettingzoo.classic import hanabi_v5
 import torch
 import variables
 from save_load import load
+import matplotlib.pyplot as plt
+import time
+
+def plot_reward_histogram(total_rewards):
+    plt.figure()
+    plt.hist(total_rewards, bins=26, range=(-0.5, 25.5), edgecolor='black')
+    plt.xlabel("Total Reward")
+    plt.ylabel("Frequency")
+    plt.title("Distribution of Total Rewards")
+    plt.tight_layout()
+    plt.savefig(f"Data/graphs/eval_histogram_{time.strftime('%Y%m%d_%H%M%S')}.png")
+    plt.show()
 
 def evaluate():
     num_episodes = 20000
