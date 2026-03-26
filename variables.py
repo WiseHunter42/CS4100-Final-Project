@@ -5,13 +5,14 @@ import torch
 CAPACITY = 100000
 
 epoch = 0
+episode = 0 # curr episode we're on 
 loss_history = []
 episode_rewards = []
 batch_size = 128
 gamma = 0.99
-eps_start = 0.9
+eps_start = 1.0
 eps_end = 0.01
-eps_decay = 1000000
+eps_decay = None # determine at run time; should be 1/2 of total episodes
 tau = 0.005
 lr = 3e-4
 update_frequency = 100 # how often to update the target network, in terms of number of epochs
