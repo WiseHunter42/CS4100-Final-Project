@@ -15,7 +15,7 @@ eps_end = 0.01
 eps_decay = None # determine at run time; should be 1/2 of total episodes
 tau = 0.005
 lr = 3e-4
-update_frequency = 100 # how often to update the target network, in terms of number of epochs
+update_frequency = 200 # how often to update the target network, in terms of number of epochs
 
 device = torch.device("cuda" if torch.cuda.is_available() 
                         else "mps" if torch.backends.mps.is_available() 
