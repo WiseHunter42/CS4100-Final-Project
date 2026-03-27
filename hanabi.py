@@ -16,7 +16,12 @@ import save_load
 def plot_loss(loss_history):
     plt.figure()
     plt.plot(loss_history)
-    plt.plot(np.convolve(loss_history, [0.25, 0.25, 0.25, 0.25], 'same'), color = 'red')
+    convFilter = []
+    for i in range(1000):
+        convFilter.append(1/1000.0)
+
+    running_avgs = np.convolve(loss_history, convFilter, 'valid')
+    plt.plot(running_avgs)
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.title("Training Loss")
@@ -27,7 +32,12 @@ def plot_loss(loss_history):
 def plot_rewards(episode_rewards):
     plt.figure()
     plt.plot(episode_rewards)
-    plt.plot(np.convolve(episode_rewards, [0.25, 0.25, 0.25, 0.25], 'same'), color = 'red')
+    convFilter = []
+    for i in range(1000):
+        convFilter.append(1/1000.0)
+
+    running_avgs = np.convolve(episode_rewards, convFilter, 'valid')
+    plt.plot(running_avgs)
     plt.xlabel("Episode")
     plt.ylabel("Total Reward")
     plt.title("Episode Rewards")
