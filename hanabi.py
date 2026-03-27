@@ -12,38 +12,44 @@ import matplotlib.pyplot as plt
 import time
 import numpy as np
 import save_load
+from pettingzoo.utils.env_logger import EnvLogger
+
+
+EnvLogger.suppress_output()
 
 def plot_loss(loss_history):
     plt.figure()
-    plt.plot(loss_history)
+    plt.plot(loss_history, label = "Epoch Loss")
     convFilter = []
     for i in range(1000):
         convFilter.append(1/1000.0)
 
     running_avgs = np.convolve(loss_history, convFilter, 'valid')
-    plt.plot(running_avgs)
+    plt.plot(running_avgs, label = "Moving Average Loss")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.title("Training Loss")
+    plt.legend()
     plt.tight_layout()
     plt.savefig(f"Data/graphs/loss_{time.strftime('%Y%m%d_%H%M%S')}.png")
-    plt.show()
+    # plt.show()
 
 def plot_rewards(episode_rewards):
     plt.figure()
-    plt.plot(episode_rewards)
+    plt.plot(episode_rewards, label = "Episodic Rewards")
     convFilter = []
     for i in range(1000):
         convFilter.append(1/1000.0)
 
     running_avgs = np.convolve(episode_rewards, convFilter, 'valid')
-    plt.plot(running_avgs)
+    plt.plot(running_avgs, label = "Moving Average Rewards")
     plt.xlabel("Episode")
     plt.ylabel("Total Reward")
     plt.title("Episode Rewards")
+    plt.legend()
     plt.tight_layout()
     plt.savefig(f"Data/graphs/rewards_{time.strftime('%Y%m%d_%H%M%S')}.png")
-    plt.show()
+    # plt.show()
 
 def learn():
     env = hanabi_v5.env(
