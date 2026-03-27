@@ -14,7 +14,7 @@ Note: Using Python 3.12.13
 2. Clone the repository locally
 3. Run `conda create -n myenv python=3.12`, which should name your conda environment 'myenv'
 4. Run `conda activate myenv`; you should now be in your venv
-5. Run `python --version` to ensure your in 3.12.12
+5. Run `python --version` to ensure your in 3.12.13
 6. Run `pip install -r requirements.txt`
 7. To deactivate the env, run conda deactivate; to see all available conda envs, run `conda env list`
 
