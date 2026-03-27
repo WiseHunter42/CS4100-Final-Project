@@ -10,11 +10,13 @@ import torch
 import variables
 import matplotlib.pyplot as plt
 import time
+import numpy as np
 import save_load
 
 def plot_loss(loss_history):
     plt.figure()
     plt.plot(loss_history)
+    plt.plot(np.convolve(loss_history, [0.25, 0.25, 0.25, 0.25]), color = 'red')
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.title("Training Loss")
@@ -25,6 +27,7 @@ def plot_loss(loss_history):
 def plot_rewards(episode_rewards):
     plt.figure()
     plt.plot(episode_rewards)
+    plt.plot(np.convolve(episode_rewards, [0.25, 0.25, 0.25, 0.25]), color = 'red')
     plt.xlabel("Episode")
     plt.ylabel("Total Reward")
     plt.title("Episode Rewards")
