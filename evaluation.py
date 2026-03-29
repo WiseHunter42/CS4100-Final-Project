@@ -20,6 +20,7 @@ def evaluate():
     num_episodes = 20000
     total_rewards = []
     policy = load("file.path.here")
+    policy.eval()
     env = hanabi_v5.env()
 
     for episode in range(num_episodes):
@@ -38,7 +39,8 @@ def evaluate():
             state = torch.tensor(observation["observation"], dtype=torch.float32, device=variables.device).unsqueeze(0)
 
             # select and take an action for the current agent
-            action = policy(state).max(1).indices.view(1, 1)
+            with torch.no_grad():
+                action = policy(state).max(1).indices.view(1, 1)
             
             # save current agent since env.step moves to the next agent
             current_agent = agent

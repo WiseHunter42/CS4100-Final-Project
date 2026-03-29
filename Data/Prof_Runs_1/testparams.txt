@@ -1,0 +1,16 @@
+Please update the appropriate parameters in variables.py (and also on line 73 of hanabi.py for epsilon decay) as explained for each run
+All runs, when prompted in the command line, should be done with 1,000,000 episodes.
+
+After each run, please revert the changes to the control for the next run!
+
+RUN 1:
+Control run; keep all parameters as is!
+
+RUN 2:
+Adjust epsilon decay on line 73 of hanabi.py; change it from // 2 to // 4. 
+
+RUN 3:
+Increase the batch_size parameter in variables.py to 168
+
+RUN 4:
+Increase the CAPACITY variable in variables.py to 200,000
