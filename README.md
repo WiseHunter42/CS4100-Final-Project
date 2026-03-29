@@ -14,7 +14,7 @@ Note: Using Python 3.12.13
 2. Clone the repository locally
 3. Run `conda create -n myenv python=3.12`, which should name your conda environment 'myenv'
 4. Run `conda activate myenv`; you should now be in your venv
-5. Run `python --version` to ensure your in 3.12.12
+5. Run `python --version` to ensure your in 3.12.13
 6. Run `pip install -r requirements.txt`
 7. To deactivate the env, run conda deactivate; to see all available conda envs, run `conda env list`
 
@@ -55,4 +55,5 @@ Static: 500,000 Episode, roughly 3 million epoch runs (8 hours)
 
 1. Decay rate; increasing to 1000000 decay rate (2.5 million epochs before hitting 0).
 2. Decrease Tau to 0.0005; memory size to 100,000
-3. Shifted target updating to every 200 epochs.
+3. Shifted target updating to every 200 epochs. (trained with 500k and 1million epoch decay, as well as 100 vs 200 epoch delay)
+4. Moved to episodic based decay, no longer based on epochs.

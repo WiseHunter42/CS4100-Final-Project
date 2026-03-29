@@ -10,27 +10,46 @@ import torch
 import variables
 import matplotlib.pyplot as plt
 import time
+import numpy as np
 import save_load
+from pettingzoo.utils.env_logger import EnvLogger
+
+
+EnvLogger.suppress_output()
 
 def plot_loss(loss_history):
     plt.figure()
-    plt.plot(loss_history)
+    plt.plot(loss_history, label = "Epoch Loss")
+    convFilter = []
+    for i in range(1000):
+        convFilter.append(1/1000.0)
+
+    running_avgs = np.convolve(loss_history, convFilter, 'valid')
+    plt.plot(running_avgs, label = "Moving Average Loss")
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.title("Training Loss")
+    plt.legend()
     plt.tight_layout()
     plt.savefig(f"Data/graphs/loss_{time.strftime('%Y%m%d_%H%M%S')}.png")
-    plt.show()
+    # plt.show()
 
 def plot_rewards(episode_rewards):
     plt.figure()
-    plt.plot(episode_rewards)
+    plt.plot(episode_rewards, label = "Episodic Rewards")
+    convFilter = []
+    for i in range(1000):
+        convFilter.append(1/1000.0)
+
+    running_avgs = np.convolve(episode_rewards, convFilter, 'valid')
+    plt.plot(running_avgs, label = "Moving Average Rewards")
     plt.xlabel("Episode")
     plt.ylabel("Total Reward")
     plt.title("Episode Rewards")
+    plt.legend()
     plt.tight_layout()
     plt.savefig(f"Data/graphs/rewards_{time.strftime('%Y%m%d_%H%M%S')}.png")
-    plt.show()
+    # plt.show()
 
 def learn():
     env = hanabi_v5.env(
@@ -38,30 +57,37 @@ def learn():
         # additional parameters here if we want to change them
         # e.g. num_players=4, colors=5, ranks=5, hand_size=4, etc.
     )
-    training_limit = str(input("Enter training limit type ('time' or 'episodes'): ")).lower()
+    # training_limit = str(input("Enter training limit type ('time' or 'episodes'): ")).lower()
     
-    if training_limit == 'time':
-        # ask user for a time limit for training, and run the learning loop for that amount of time
-        time_limit = float(input("Enter the time limit for training (in minutes): "))
-    elif training_limit == 'episodes':
-        # ask user for an episode limit for training, and run the learning loop for that amount of episodes
-        episode_limit = int(input("Enter the episode limit for training: "))
-    else:
-        print("Invalid training limit. Please enter 'time' or 'episodes'.")
-        return
+    # if training_limit == 'time':
+    #     # ask user for a time limit for training, and run the learning loop for that amount of time
+    #     time_limit = float(input("Enter the time limit for training (in minutes): "))
+    # elif training_limit == 'episodes':
+    #     # ask user for an episode limit for training, and run the learning loop for that amount of episodes
+    #     episode_limit = int(input("Enter the episode limit for training: "))
+    # else:
+    #     print("Invalid training limit. Please enter 'time' or 'episodes'.")
+    #     return
 
+    episode_limit = int(input("Enter the episode limit for training: "))
+    variables.eps_decay = episode_limit // 2
+    
     start_time = time.time()
 
     while True:
-        if training_limit == 'time':
-            elapsed_time = time.time() - start_time
-            if elapsed_time >= time_limit * 60:
-                print(f"Time limit of {time_limit} minutes reached. Ending training.")
-                break
-        elif training_limit == 'episodes':
-            if len(variables.episode_rewards) >= episode_limit:
-                print(f"Episode limit of {episode_limit} reached. Ending training.")
-                break  
+        # if training_limit == 'time':
+        #     elapsed_time = time.time() - start_time
+        #     if elapsed_time >= time_limit * 60:
+        #         print(f"Time limit of {time_limit} minutes reached. Ending training.")
+        #         break
+        # elif training_limit == 'episodes':
+        #     if len(variables.episode_rewards) >= episode_limit:
+        #         print(f"Episode limit of {episode_limit} reached. Ending training.")
+        #         break  
+        
+        if len(variables.episode_rewards) >= episode_limit:
+            print(f"Episode limit of {episode_limit} reached. Ending training.")
+            break  
         
         # reset the environment at the start of each episode
         # I think the seeds needs to be random or every episode will be the same?
@@ -109,6 +135,9 @@ def learn():
             # perform one step of the optimization on the policy network
             optimize()
 
+            # update the epoch counter
+            variables.epoch += 1
+
             # Soft update of the target network's weights
             # θ′ ← τ θ + (1 −τ )θ′
             if variables.epoch % variables.update_frequency == 0:
@@ -117,6 +146,7 @@ def learn():
                 for key in policy_net_state_dict:
                     target_net_state_dict[key] = policy_net_state_dict[key]*variables.tau + target_net_state_dict[key]*(1-variables.tau)
                 variables.target_net.load_state_dict(target_net_state_dict)
+        variables.episode += 1
         variables.episode_rewards.append(episode_reward)
     env.close()
 

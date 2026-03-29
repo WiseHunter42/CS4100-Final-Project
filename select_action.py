@@ -5,7 +5,7 @@ import variables
 import torch
 
 def select_action(state, env, agent):
-    eps_threshold = variables.eps_end + (variables.eps_start - variables.eps_end) * math.exp(-1. * variables.epoch / variables.eps_decay)
+    eps_threshold = variables.eps_end + (variables.eps_start - variables.eps_end) * math.exp(-1. * variables.episode / variables.eps_decay)
     sample = random.random()
     if (sample > eps_threshold) :
         # Return chosen state
