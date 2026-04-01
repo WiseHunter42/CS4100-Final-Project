@@ -114,7 +114,7 @@ def learn():
             action_mask = torch.tensor(observation["action_mask"], dtype=torch.bool, device=variables.device)
 
             # select and take an action for the current agent
-            action = select_action(state, env, agent)
+            action = select_action(state, action_mask, env, agent)
             
             # save current agent since env.step moves to the next agent
             current_agent = agent
