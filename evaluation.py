@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import time
 
 def plot_reward_histogram(total_rewards):
+    print(total_rewards)
     plt.figure()
     plt.hist(total_rewards, bins=26, range=(-0.5, 25.5), edgecolor='black')
     plt.xlabel("Total Reward")
@@ -17,7 +18,7 @@ def plot_reward_histogram(total_rewards):
     plt.show()
 
 def evaluate():
-    num_episodes = 20000
+    num_episodes = 10000
     total_rewards = []
     policy = load("file.path.here")
     policy.eval()
@@ -49,5 +50,7 @@ def evaluate():
             # Get next_state from the current agent's PoV after the action
             reward = torch.tensor([env.rewards[current_agent]], device=variables.device)
             episode_reward += reward.item()
-        variables.episode_rewards.append(episode_reward)
-    plot_rewards(total_rewards)
+        total_rewards.append(episode_reward)
+    plot_reward_histogram(total_rewards)
+
+evaluate()
