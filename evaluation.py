@@ -1,4 +1,3 @@
-from hanabi import plot_rewards
 from pettingzoo.classic import hanabi_v5
 import torch
 import variables
@@ -7,7 +6,6 @@ import matplotlib.pyplot as plt
 import time
 
 def plot_reward_histogram(total_rewards):
-    print(total_rewards)
     plt.figure()
     plt.hist(total_rewards, bins=26, range=(-0.5, 25.5), edgecolor='black')
     plt.xlabel("Total Reward")
@@ -20,7 +18,7 @@ def plot_reward_histogram(total_rewards):
 def evaluate():
     num_episodes = 10000
     total_rewards = []
-    policy = load("file.path.here")
+    policy = load("Data/policy_nets/BG AM policy, .005T, 200updt.pth")
     policy.eval()
     env = hanabi_v5.env()
 
@@ -39,9 +37,13 @@ def evaluate():
 
             state = torch.tensor(observation["observation"], dtype=torch.float32, device=variables.device).unsqueeze(0)
 
+            action_mask = torch.tensor(observation["action_mask"], dtype=torch.bool, device=variables.device)
+
             # select and take an action for the current agent
             with torch.no_grad():
-                action = policy(state).max(1).indices.view(1, 1)
+                q_values = policy(state)
+                q_values[~action_mask.unsqueeze(0)] = -float('inf')
+                action = q_values.max(1).indices.view(1, 1)
             
             # save current agent since env.step moves to the next agent
             current_agent = agent
