@@ -1,6 +1,5 @@
 import torch
 import os
-
 import variables
 import agent
 

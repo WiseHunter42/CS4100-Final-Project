@@ -4,8 +4,10 @@ https://pettingzoo.farama.org/environments/classic/hanabi/
 """
 
 from pettingzoo.classic import hanabi_v5
+from pettingzoo.utils.env_logger import EnvLogger
 from select_action import select_action
 from optimize import optimize
+from tqdm import tqdm
 import torch
 import variables
 import matplotlib.pyplot as plt
@@ -13,7 +15,6 @@ import time
 import os
 import numpy as np
 import save_load
-from pettingzoo.utils.env_logger import EnvLogger
 
 
 EnvLogger.suppress_output()
@@ -52,6 +53,7 @@ def plot_rewards(episode_rewards, run_dir):
     plt.savefig(os.path.join(run_dir, "rewards.png"))
     # plt.show()
 
+
 def learn():
     env = hanabi_v5.env(
         # render_mode="human"
@@ -68,20 +70,15 @@ def learn():
     save_load.save_params(run_name, episode_limit)
 
     start_time = time.time()
+    pbar = tqdm(total=episode_limit, desc="Training", unit="ep")
 
     while True:
         if len(variables.episode_rewards) >= episode_limit:
-            print(f"Episode limit of {episode_limit} reached. Ending training.")
             break
 
         # reset the environment at the start of each episode
         env.reset()
         episode_reward = 0
-
-        # report elapsed time every 100 episodes
-        if len(variables.episode_rewards) % 100 == 0:
-            elapsed_time = time.time() - start_time
-            print(f"Episode: {len(variables.episode_rewards)}, Elapsed Time: {elapsed_time:.2f} seconds")
 
         for agent in env.agent_iter():
             # env.last() returns info for current agent
@@ -131,6 +128,9 @@ def learn():
                 variables.target_net.load_state_dict(target_net_state_dict)
         variables.episode += 1
         variables.episode_rewards.append(episode_reward)
+        pbar.update(1)
+        pbar.set_postfix(reward=f"{episode_reward:.1f}")
+    pbar.close()
     env.close()
     return run_name, run_dir
 

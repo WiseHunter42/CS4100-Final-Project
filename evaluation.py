@@ -1,4 +1,5 @@
 from pettingzoo.classic import hanabi_v5
+from tqdm import tqdm
 import torch
 import os
 import variables
@@ -26,7 +27,7 @@ def evaluate():
     policy.eval()
     env = hanabi_v5.env()
 
-    for episode in range(num_episodes):
+    for episode in tqdm(range(num_episodes), desc="Evaluating", unit="ep"):
         env.reset()
 
         episode_reward = 0
