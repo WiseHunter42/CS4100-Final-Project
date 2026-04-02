@@ -121,25 +121,23 @@ def learn():
             episode_reward += reward.item()
             variables.memory.append(variables.Transition(state, action, next_state, reward))
 
-            # perform one step of the optimization on the policy network
-            optimize()
-
             # update the step counter
             variables.step += 1
+
+            # perform one step of the optimization on the policy network (every 4 steps)
+            if variables.step % variables.train_frequency == 0:
+                optimize()
 
             # Soft update of the target network's weights
             # θ′ ← τ θ + (1 −τ )θ′
             if variables.step % variables.update_frequency == 0:
-                target_net_state_dict = variables.target_net.state_dict()
-                policy_net_state_dict = variables.policy_net.state_dict()
-                for key in policy_net_state_dict:
-                    target_net_state_dict[key] = policy_net_state_dict[key]*variables.tau + target_net_state_dict[key]*(1-variables.tau)
-                variables.target_net.load_state_dict(target_net_state_dict)
+                with torch.no_grad():
+                    for p, tp in zip(variables.policy_net.parameters(), variables.target_net.parameters()):
+                        tp.data.mul_(1 - variables.tau).add_(p.data, alpha=variables.tau)
 
         variables.episode += 1
         variables.episode_rewards.append(episode_reward)
         pbar.update(1)
-        pbar.set_postfix(reward=f"{episode_reward:.1f}")
 
         if variables.episode % variables.checkpoint_frequency == 0:
             save_load.save_checkpoint(run_name, episode_limit)
