@@ -21,20 +21,21 @@ EnvLogger.suppress_output()
 
 def plot_loss(loss_history, run_dir):
     plt.figure()
-    plt.plot(loss_history, label = "Epoch Loss")
+    plt.plot(loss_history, label = "Step Loss")
     convFilter = []
     for i in range(1000):
         convFilter.append(1/1000.0)
 
     running_avgs = np.convolve(loss_history, convFilter, 'valid')
     plt.plot(running_avgs, label = "Moving Average Loss")
-    plt.xlabel("Epoch")
+    plt.xlabel("Step")
     plt.ylabel("Loss")
     plt.title("Training Loss")
     plt.legend()
     plt.tight_layout()
     plt.savefig(os.path.join(run_dir, "loss.png"))
     # plt.show()
+
 
 def plot_rewards(episode_rewards, run_dir):
     plt.figure()
@@ -61,15 +62,24 @@ def learn():
         # e.g. num_players=4, colors=5, ranks=5, hand_size=4, etc.
     )
 
-    episode_limit = int(input("Enter the episode limit for training: "))
-    run_name = time.strftime('%Y-%m-%d_%H-%M-%S')
+    resuming = input("Resume from checkpoint? (y/n): ").strip().lower() == 'y'
+
+    if resuming:
+        runs = sorted(os.listdir(os.path.join("Data", "runs")))
+        most_recent = runs[-1] if runs else None
+        prompt = f"Enter run name to resume (default: {most_recent}): " if most_recent else "Enter run name to resume: "
+        run_name = input(prompt).strip() or most_recent
+        episode_limit = save_load.load_checkpoint(run_name)
+        print(f"Resuming from episode {variables.episode}/{episode_limit}")
+    else:
+        episode_limit = int(input("Enter the episode limit for training: "))
+        run_name = time.strftime('%Y-%m-%d_%H-%M-%S')
+        variables.eps_decay = episode_limit // 2
+        os.makedirs(os.path.join("Data", "runs", run_name), exist_ok=True)
+        save_load.save_params(run_name, episode_limit)
+
     run_dir = os.path.join("Data", "runs", run_name)
-    os.makedirs(run_dir, exist_ok=True)
-
-    variables.eps_decay = episode_limit // 2
-    save_load.save_params(run_name, episode_limit)
-
-    pbar = tqdm(total=episode_limit, desc="Training", unit="ep")
+    pbar = tqdm(total=episode_limit, initial=variables.episode, desc="Training", unit="ep")
 
     while True:
         if len(variables.episode_rewards) >= episode_limit:
@@ -114,24 +124,30 @@ def learn():
             # perform one step of the optimization on the policy network
             optimize()
 
-            # update the epoch counter
-            variables.epoch += 1
+            # update the step counter
+            variables.step += 1
 
             # Soft update of the target network's weights
             # θ′ ← τ θ + (1 −τ )θ′
-            if variables.epoch % variables.update_frequency == 0:
+            if variables.step % variables.update_frequency == 0:
                 target_net_state_dict = variables.target_net.state_dict()
                 policy_net_state_dict = variables.policy_net.state_dict()
                 for key in policy_net_state_dict:
                     target_net_state_dict[key] = policy_net_state_dict[key]*variables.tau + target_net_state_dict[key]*(1-variables.tau)
                 variables.target_net.load_state_dict(target_net_state_dict)
+
         variables.episode += 1
         variables.episode_rewards.append(episode_reward)
         pbar.update(1)
         pbar.set_postfix(reward=f"{episode_reward:.1f}")
+
+        if variables.episode % variables.checkpoint_frequency == 0:
+            save_load.save_checkpoint(run_name, episode_limit)
+
     pbar.close()
     env.close()
     return run_name, run_dir
+
 
 if __name__ == "__main__":
     run_name, run_dir = learn()
