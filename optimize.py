@@ -27,8 +27,9 @@ def optimize():
     # get the next_state values; use the non-final-next-state mask to only update non_final states
     next_state_values = torch.zeros(variables.batch_size, device=variables.device)
     with torch.no_grad():
-        # max_a Q(s', a')
-        next_state_values[non_final_next_state_mask] = variables.target_net(non_final_next_states).max(1).values # for each row of q values (for each state), get the best value
+        # Double DQN: policy net selects the best action, target net evaluates it
+        best_actions = variables.policy_net(non_final_next_states).max(1).indices
+        next_state_values[non_final_next_state_mask] = variables.target_net(non_final_next_states).gather(1, best_actions.unsqueeze(1)).squeeze(1)
     
     q_values_target = reward_batch + (variables.gamma * next_state_values)
 
