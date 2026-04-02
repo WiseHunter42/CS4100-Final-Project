@@ -69,7 +69,6 @@ def learn():
     variables.eps_decay = episode_limit // 2
     save_load.save_params(run_name, episode_limit)
 
-    start_time = time.time()
     pbar = tqdm(total=episode_limit, desc="Training", unit="ep")
 
     while True:

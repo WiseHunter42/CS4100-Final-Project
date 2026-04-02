@@ -1,6 +1,5 @@
 import torch
 import variables
-import random
 
 def optimize():
     # if we don't have enough data, don't try to optimize
@@ -8,7 +7,7 @@ def optimize():
         return
     
     # get random sample of batches from memory
-    transitions = random.sample(variables.memory, variables.batch_size)
+    transitions = variables.memory.sample(variables.batch_size)
 
     # Group batch into one giant Transition with lists for each field
     batch = variables.Transition(*zip(*transitions))
@@ -34,8 +33,7 @@ def optimize():
     q_values_target = reward_batch + (variables.gamma * next_state_values)
 
     # Compute Huber loss
-    criterion = torch.nn.SmoothL1Loss()
-    loss = criterion(q_values_policy, q_values_target.unsqueeze(1))
+    loss = variables.criterion(q_values_policy, q_values_target.unsqueeze(1))
 
     # Optimize the model
     variables.optimizer.zero_grad()
