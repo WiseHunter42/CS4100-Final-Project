@@ -45,3 +45,35 @@ def resume(run_name):
     state_dict = torch.load(path, weights_only=True)
     variables.policy_net.load_state_dict(state_dict)
     variables.target_net.load_state_dict(state_dict)
+
+
+def save_checkpoint(run_name, episode_limit):
+    checkpoint = {
+        'policy_net': variables.policy_net.state_dict(),
+        'target_net': variables.target_net.state_dict(),
+        'optimizer': variables.optimizer.state_dict(),
+        'step': variables.step,
+        'episode': variables.episode,
+        'loss_history': variables.loss_history,
+        'episode_rewards': variables.episode_rewards,
+        'eps_decay': variables.eps_decay,
+        'episode_limit': episode_limit,
+    }
+    torch.save(checkpoint, os.path.join(_run_dir(run_name), "checkpoint.pth"))
+
+
+def load_checkpoint(run_name):
+    checkpoint = torch.load(
+        os.path.join(_run_dir(run_name), "checkpoint.pth"),
+        weights_only=False,
+        map_location=variables.device
+    )
+    variables.policy_net.load_state_dict(checkpoint['policy_net'])
+    variables.target_net.load_state_dict(checkpoint['target_net'])
+    variables.optimizer.load_state_dict(checkpoint['optimizer'])
+    variables.step = checkpoint['step']
+    variables.episode = checkpoint['episode']
+    variables.loss_history = checkpoint['loss_history']
+    variables.episode_rewards = checkpoint['episode_rewards']
+    variables.eps_decay = checkpoint['eps_decay']
+    return checkpoint['episode_limit']

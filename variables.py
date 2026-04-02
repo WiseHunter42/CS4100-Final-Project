@@ -25,9 +25,9 @@ class ReplayBuffer:
         return len(self._buf)
     
 
-CAPACITY = 100000
+CAPACITY = 200000
 
-epoch = 0
+step = 0
 episode = 0 # curr episode we're on
 loss_history = []
 episode_rewards = []
@@ -36,14 +36,14 @@ gamma = 0.99
 eps_start = 1.0
 eps_end = 0.01
 eps_decay = None # determine at run time; should be 1/2 of total episodes
-tau = 0.0005
+tau = 0.001
 lr = 3e-4
-update_frequency = 200 # how often to update the target network, in terms of number of epochs
+update_frequency = 100 # how often to update the target network, in terms of number of steps
+checkpoint_frequency = 10000 # how often to save a checkpoint, in terms of number of episodes
 
 device = torch.device("cuda" if torch.cuda.is_available()
                         else "mps" if torch.backends.mps.is_available()
                         else "cpu")
-
 
 memory = ReplayBuffer(CAPACITY)
 policy_net = agent.Network().to(device=device)

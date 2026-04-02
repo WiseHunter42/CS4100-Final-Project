@@ -16,10 +16,12 @@ def plot_reward_histogram(total_rewards, eval_dir):
     plt.savefig(os.path.join(eval_dir, "eval_histogram.png"))
     plt.show()
 
+
 def evaluate():
     run_name = input("Enter the run name to evaluate (folder name under Data/runs/): ")
     eval_dir = os.path.join("Data", "eval", run_name)
     os.makedirs(eval_dir, exist_ok=True)
+
 
     num_episodes = 10000
     total_rewards = []
@@ -60,4 +62,5 @@ def evaluate():
         total_rewards.append(episode_reward)
     plot_reward_histogram(total_rewards, eval_dir)
 
-evaluate()
+if __name__ == "__main__":
+    evaluate()
