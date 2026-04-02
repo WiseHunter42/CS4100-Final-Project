@@ -2,7 +2,7 @@ import torch.nn as nn
 
 num_observations = 658
 num_actions = 20
-SHAPE = [num_observations, 30, 30, num_actions] # Initial 658, Ending 20 are fixed
+SHAPE = [num_observations, 512, 256, 128, num_actions] # Initial 658, Ending 20 are fixed
 ACTIVATION = nn.functional.relu
 
 class Network(nn.Module):

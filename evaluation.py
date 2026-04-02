@@ -1,24 +1,28 @@
 from pettingzoo.classic import hanabi_v5
 import torch
+import os
 import variables
 from save_load import load
 import matplotlib.pyplot as plt
-import time
 
-def plot_reward_histogram(total_rewards):
+def plot_reward_histogram(total_rewards, eval_dir):
     plt.figure()
     plt.hist(total_rewards, bins=26, range=(-0.5, 25.5), edgecolor='black')
     plt.xlabel("Total Reward")
     plt.ylabel("Frequency")
     plt.title("Distribution of Total Rewards")
     plt.tight_layout()
-    plt.savefig(f"Data/graphs/eval_histogram_{time.strftime('%Y%m%d_%H%M%S')}.png")
+    plt.savefig(os.path.join(eval_dir, "eval_histogram.png"))
     plt.show()
 
 def evaluate():
+    run_name = input("Enter the run name to evaluate (folder name under Data/runs/): ")
+    eval_dir = os.path.join("Data", "eval", run_name)
+    os.makedirs(eval_dir, exist_ok=True)
+
     num_episodes = 10000
     total_rewards = []
-    policy = load("Data/policy_nets/BG AM policy, .005T, 200updt.pth")
+    policy = load(run_name)
     policy.eval()
     env = hanabi_v5.env()
 
@@ -44,7 +48,7 @@ def evaluate():
                 q_values = policy(state)
                 q_values[~action_mask.unsqueeze(0)] = -float('inf')
                 action = q_values.max(1).indices.view(1, 1)
-            
+
             # save current agent since env.step moves to the next agent
             current_agent = agent
             env.step(action.item())
@@ -53,6 +57,6 @@ def evaluate():
             reward = torch.tensor([env.rewards[current_agent]], device=variables.device)
             episode_reward += reward.item()
         total_rewards.append(episode_reward)
-    plot_reward_histogram(total_rewards)
+    plot_reward_histogram(total_rewards, eval_dir)
 
 evaluate()

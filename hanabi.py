@@ -10,6 +10,7 @@ import torch
 import variables
 import matplotlib.pyplot as plt
 import time
+import os
 import numpy as np
 import save_load
 from pettingzoo.utils.env_logger import EnvLogger
@@ -17,7 +18,7 @@ from pettingzoo.utils.env_logger import EnvLogger
 
 EnvLogger.suppress_output()
 
-def plot_loss(loss_history):
+def plot_loss(loss_history, run_dir):
     plt.figure()
     plt.plot(loss_history, label = "Epoch Loss")
     convFilter = []
@@ -31,10 +32,10 @@ def plot_loss(loss_history):
     plt.title("Training Loss")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f"Data/graphs/loss_{time.strftime('%Y%m%d_%H%M%S')}.png")
+    plt.savefig(os.path.join(run_dir, "loss.png"))
     # plt.show()
 
-def plot_rewards(episode_rewards):
+def plot_rewards(episode_rewards, run_dir):
     plt.figure()
     plt.plot(episode_rewards, label = "Episodic Rewards")
     convFilter = []
@@ -48,7 +49,7 @@ def plot_rewards(episode_rewards):
     plt.title("Episode Rewards")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f"Data/graphs/rewards_{time.strftime('%Y%m%d_%H%M%S')}.png")
+    plt.savefig(os.path.join(run_dir, "rewards.png"))
     # plt.show()
 
 def learn():
@@ -57,44 +58,26 @@ def learn():
         # additional parameters here if we want to change them
         # e.g. num_players=4, colors=5, ranks=5, hand_size=4, etc.
     )
-    # training_limit = str(input("Enter training limit type ('time' or 'episodes'): ")).lower()
-    
-    # if training_limit == 'time':
-    #     # ask user for a time limit for training, and run the learning loop for that amount of time
-    #     time_limit = float(input("Enter the time limit for training (in minutes): "))
-    # elif training_limit == 'episodes':
-    #     # ask user for an episode limit for training, and run the learning loop for that amount of episodes
-    #     episode_limit = int(input("Enter the episode limit for training: "))
-    # else:
-    #     print("Invalid training limit. Please enter 'time' or 'episodes'.")
-    #     return
 
     episode_limit = int(input("Enter the episode limit for training: "))
+    run_name = time.strftime('%Y-%m-%d_%H-%M-%S')
+    run_dir = os.path.join("Data", "runs", run_name)
+    os.makedirs(run_dir, exist_ok=True)
+
     variables.eps_decay = episode_limit // 2
-    
+    save_load.save_params(run_name, episode_limit)
+
     start_time = time.time()
 
     while True:
-        # if training_limit == 'time':
-        #     elapsed_time = time.time() - start_time
-        #     if elapsed_time >= time_limit * 60:
-        #         print(f"Time limit of {time_limit} minutes reached. Ending training.")
-        #         break
-        # elif training_limit == 'episodes':
-        #     if len(variables.episode_rewards) >= episode_limit:
-        #         print(f"Episode limit of {episode_limit} reached. Ending training.")
-        #         break  
-        
         if len(variables.episode_rewards) >= episode_limit:
             print(f"Episode limit of {episode_limit} reached. Ending training.")
-            break  
-        
+            break
+
         # reset the environment at the start of each episode
-        # I think the seeds needs to be random or every episode will be the same?
-        # Someone could check this
         env.reset()
         episode_reward = 0
-        
+
         # report elapsed time every 100 episodes
         if len(variables.episode_rewards) % 100 == 0:
             elapsed_time = time.time() - start_time
@@ -108,14 +91,14 @@ def learn():
             if terminated or truncated:
                 break
 
-            # need to get the state from the observation, 
+            # need to get the state from the observation,
             # which is a dictionary with keys "observation", "action_mask" which holds the legal moves
             state = torch.tensor(observation["observation"], dtype=torch.float32, device=variables.device).unsqueeze(0)
             action_mask = torch.tensor(observation["action_mask"], dtype=torch.bool, device=variables.device)
 
             # select and take an action for the current agent
             action = select_action(state, action_mask, env, agent)
-            
+
             # save current agent since env.step moves to the next agent
             current_agent = agent
             env.step(action.item())
@@ -123,12 +106,12 @@ def learn():
             # Get next_state from the current agent's PoV after the action
             next_observation = env.observe(current_agent)
             reward = torch.tensor([env.rewards[current_agent]], device=variables.device)
-            
+
             if env.terminations[current_agent] or env.truncations[current_agent]:
                 next_state = None
             else:
                 next_state = torch.tensor(next_observation["observation"], dtype=torch.float32, device=variables.device).unsqueeze(0)
-            
+
             episode_reward += reward.item()
             variables.memory.append(variables.Transition(state, action, next_state, reward))
 
@@ -149,10 +132,10 @@ def learn():
         variables.episode += 1
         variables.episode_rewards.append(episode_reward)
     env.close()
+    return run_name, run_dir
 
 if __name__ == "__main__":
-    learn()
-    plot_loss(variables.loss_history)
-    plot_rewards(variables.episode_rewards)
-    save_load.save(f'Data/policy_nets/policy_{time.strftime("%Y%m%d_%H%M%S")}.pth', f'Data/target_nets/target_{time.strftime("%Y%m%d_%H%M%S")}.pth')
-    save_load.save_history(f'Data/histories/loss_history_{time.strftime("%Y%m%d_%H%M%S")}.pth', f'Data/histories/episode_rewards_{time.strftime("%Y%m%d_%H%M%S")}.pth')
+    run_name, run_dir = learn()
+    plot_loss(variables.loss_history, run_dir)
+    plot_rewards(variables.episode_rewards, run_dir)
+    save_load.save(run_name)

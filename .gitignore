@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Model weights and training data (too large for GitHub)
+*.pth
+
+# macOS
+.DS_Store
+
+# Training run outputs (models, histories, graphs)
+Data/runs/
+Data/eval/
+
+# Keep legacy data folders' structure but not contents
+Data/graphs/*
+Data/histories/*
+Data/policy_nets/*
+Data/target_nets/*
+!Data/graphs/.gitkeep
+!Data/histories/.gitkeep
+!Data/policy_nets/.gitkeep
+!Data/target_nets/.gitkeep
