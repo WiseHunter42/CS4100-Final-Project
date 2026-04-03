@@ -14,7 +14,6 @@ def optimize():
 
     # Determine non-final next states and mask for next state values, which is just a T/F vector that says whether or not a given next state is None
     non_final_next_state_mask = torch.tensor(tuple(map(lambda s : s is not None, batch.next_state)), device=variables.device, dtype=torch.bool)
-    non_final_next_states = torch.cat([x for x in batch.next_state if x is not None])
 
     # Turn state, action, reward into tensors
     state_batch = torch.cat(batch.state)
@@ -26,10 +25,15 @@ def optimize():
 
     # get the next_state values; use the non-final-next-state mask to only update non_final states
     next_state_values = torch.zeros(variables.batch_size, device=variables.device)
-    with torch.no_grad():
-        # Double DQN: policy net selects the best action, target net evaluates it
-        best_actions = variables.policy_net(non_final_next_states).max(1).indices
-        next_state_values[non_final_next_state_mask] = variables.target_net(non_final_next_states).gather(1, best_actions.unsqueeze(1)).squeeze(1)
+    if non_final_next_state_mask.any():
+        non_final_next_states = torch.cat([x for x in batch.next_state if x is not None])
+        non_final_next_masks = torch.stack([m for m in batch.next_action_mask if m is not None])
+        with torch.no_grad():
+            # Double DQN: policy net selects the best action, target net evaluates it
+            policy_q_next = variables.policy_net(non_final_next_states)
+            policy_q_next[~non_final_next_masks] = -float('inf')
+            best_actions = policy_q_next.max(1).indices
+            next_state_values[non_final_next_state_mask] = variables.target_net(non_final_next_states).gather(1, best_actions.unsqueeze(1)).squeeze(1)
     
     q_values_target = reward_batch + (variables.gamma * next_state_values)
 

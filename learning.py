@@ -74,7 +74,7 @@ def learn():
     else:
         episode_limit = int(input("Enter the episode limit for training: "))
         run_name = time.strftime('%Y-%m-%d_%H-%M-%S')
-        variables.eps_decay = episode_limit // 2
+        variables.eps_decay = episode_limit * 3 // 4
         os.makedirs(os.path.join("Data", "runs", run_name), exist_ok=True)
         save_load.save_params(run_name, episode_limit)
 
@@ -115,11 +115,13 @@ def learn():
 
             if env.terminations[current_agent] or env.truncations[current_agent]:
                 next_state = None
+                next_action_mask = None
             else:
                 next_state = torch.tensor(next_observation["observation"], dtype=torch.float32, device=variables.device).unsqueeze(0)
+                next_action_mask = torch.tensor(next_observation["action_mask"], dtype=torch.bool, device=variables.device)
 
             episode_reward += reward.item()
-            variables.memory.append(variables.Transition(state, action, next_state, reward))
+            variables.memory.append(variables.Transition(state, action, next_state, reward, next_action_mask))
 
             # update the step counter
             variables.step += 1

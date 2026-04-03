@@ -40,13 +40,6 @@ def load(run_name):
     return network
 
 
-def resume(run_name):
-    path = os.path.join(_run_dir(run_name), "policy.pth")
-    state_dict = torch.load(path, weights_only=True)
-    variables.policy_net.load_state_dict(state_dict)
-    variables.target_net.load_state_dict(state_dict)
-
-
 def save_checkpoint(run_name, episode_limit):
     checkpoint = {
         'policy_net': variables.policy_net.state_dict(),
