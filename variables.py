@@ -25,7 +25,7 @@ class ReplayBuffer:
         return len(self._buf)
     
 
-CAPACITY = 200000
+CAPACITY = 250000
 
 step = 0
 episode = 0 # curr episode we're on
@@ -36,9 +36,9 @@ gamma = 0.99
 eps_start = 1.0
 eps_end = 0.01
 eps_decay = None # determine at run time; should be 1/2 of total episodes
-tau = 0.001
+tau = 0.005
 lr = 3e-4
-train_frequency = 8    # how often to run an optimization step, in terms of env steps
+train_frequency = 4    # how often to run an optimization step, in terms of env steps
 update_frequency = 100 # how often to update the target network, in terms of number of steps
 checkpoint_frequency = 10000 # how often to save a checkpoint, in terms of number of episodes
 
