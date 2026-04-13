@@ -51,9 +51,25 @@ Note: Using Python 3.12.13
 
 # Fine-tuning
 
-Static: 500,000 Episode, roughly 3 million epoch runs (8 hours)
+Initial Testing: 
 
+Static: 500,000 Episode, roughly 3 million epoch runs (8 hours)
 1. Decay rate; increasing to 1000000 decay rate (2.5 million epochs before hitting 0).
 2. Decrease Tau to 0.0005; memory size to 100,000
 3. Shifted target updating to every 200 epochs. (trained with 500k and 1million epoch decay, as well as 100 vs 200 epoch delay)
 4. Moved to episodic based decay, no longer based on epochs.
+
+-> No changes occurred to baseline, so networks/graphs were scrapped; results can be viewed using the First_Run graphs
+-> Changed from episodic to epoch-based decay; adjusted frequency of target network updates
+
+Professor Testing: See Data/ProfRuns/testparams.txt for specific testing conducted
+
+-> Updated Memory Size to 100,000, continued to experiment with Tau. 
+
+Later Testing:
+Static: 500,000 Episodes, 0.0005/0.005 Tau, 100,000 memory size
+1. Test changes to training net epoch update frequency between 100-200
+2. Test LR adjustment by factor of 10
+3. MAJOR ADJUSTMENT: INCLUDE ACTION MASKING
+
+-> Action Masking performed significantly better in evaluation than non-action masking runs.
