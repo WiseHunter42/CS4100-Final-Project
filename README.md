@@ -64,7 +64,7 @@ Static: 500,000 Episode, roughly 3 million epoch runs (8 hours)
 
 Professor Testing: See Data/ProfRuns/testparams.txt for specific testing conducted
 
--> Updated Memory Size to 100,000, continued to experiment with Tau. 
+-> Updated Memory Size to 50,000, then 100,000; continued to experiment with Tau. 
 
 Later Testing:
 Static: 500,000 Episodes, 0.0005/0.005 Tau, 100,000 memory size
